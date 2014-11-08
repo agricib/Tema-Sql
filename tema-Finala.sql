@@ -3,8 +3,8 @@
 ----------------USE master; 
 ----------------GO 
 ----------------CREATE DATABASE Magazin 
-----------------ON      ( NAME = Sales_dat, FILENAME = 'C:\Databases\Magazin.mdf') 
-----------------LOG ON  ( NAME = Sales_log, FILENAME = 'C:\Databases\Magazin.ldf'); 
+----------------ON      ( NAME = Sales_dat, FILENAME = 'E:\Databases\Magazin.mdf') 
+----------------LOG ON  ( NAME = Sales_log, FILENAME = 'E:\Databases\Magazin.ldf'); 
 ----------------GO
 
 ----------------cerinta doi
@@ -80,14 +80,14 @@
 ------as
 ------begin
 ------insert into [dbo].[Stocuri](cantitate, id_magazin, id_produs) values 
-------(10, 1, 1),
-------(15, 1, 3),
-------(20, 1, 6),
-------(25, 1, 10),
-------(10, 2, 4),
-------(15, 2, 2),
-------(20, 2, 11),
-------(25, 2, 5);
+------(120, 1, 1),
+------(215, 1, 3),
+------(320, 1, 6),
+------(525, 1, 10),
+------(310, 2, 4),
+------(125, 2, 2),
+------(120, 2, 11),
+------(2325, 2, 5);
 ------end;
 ------go
 --------Use Magazin
@@ -99,9 +99,6 @@
 --------(5, 2, 5, 'Rosii'),
 --------(6, 1, 6, 'Strudel'),
 --------(7, 1, 1, 'Paine Neagra'),
---------(8, 2, 2, 'Lapte'),
---------(9, 2, 3, 'Mezelurile Afumate'),
---------(10, 1, 4, 'Pere'),
 --------(11, 2, 5, 'Castraveti'),
 --------(12, 1, 6, 'Pateu');
 
@@ -126,10 +123,10 @@
 ------select * from [dbo].[Categorie_Produs];
 
 ------insert into [dbo].[Stocuri](cantitate, id_magazin, id_produs) values 
-------(1, 1, 1),
-------(2, 2, 2),
-------(3, 1, 4),
-------(4, 2, 6);
+------(100, 1, 1),
+------(200, 2, 2),
+------(300, 1, 4),
+------(400, 2, 6);
 
 
 ------parcurgere secventilala folosind bucla
@@ -164,9 +161,6 @@
 ----------(3, 1, 3, N'Cotletul de Porc'),
 ----------(4, 2, 4, N'Meree'),
 ----------(5, 2, 5, N'Rosii'),
-----------(6, 1, 6, N'Strudel'),
-----------(7, 1, 1, N'Paine Neagra'),
-----------(8, 2, 2, N'Lapte'),
 ----------(9, 2, 3, N'Mezelurile Afumate'),
 ----------(10, 1, 4, N'Pere'),
 ----------(11, 2, 5, N'Castraveti'),
@@ -223,14 +217,14 @@
 ----------BEGIN
 ----------	INSERT INTO [dbo].[Intrari](id_magazin, id_produs,cantitate, pret_unitar, data_intrare)
 ----------	VALUES
-----------	(1, 1,100, 1.00, getdate()+1),
-----------	(1, 3,200, 8.00, getdate()+10),
-----------	(1, 6,300, 3.00, getdate()+100),
-----------	(1, 10,350, 6.00, getdate()+1000),
-----------	(2, 2,350, 3.00, getdate()+1),
-----------	(2, 4,10, 5.00, getdate()+10),
-----------	(2, 5,120, 2.00, getdate()+100),
-----------	(2, 11,230, 3.00, getdate()+10000)
+----------	(1, 1,100, 10.00, getdate()+1),
+----------	(1, 3,200, 800.00, getdate()+10),
+----------	(1, 6,300, 333.00, getdate()+100),
+----------	(1, 10,350, 226.00, getdate()+1000),
+----------	(2, 2,350, 113.00, getdate()+1),
+----------	(2, 4,10, 252.00, getdate()+10),
+----------	(2, 5,120, 782.00, getdate()+100),
+----------	(2, 11,230, 323.00, getdate()+10000)
 ----------END
 ----------return
 
@@ -352,26 +346,34 @@
 
 
 ---nu e bine---
-------CREATE PROC AfisareEvolutie 
+--------CREATE PROC AfisareEvolutie 
+--------@zile as int
+--------AS 
+--------BEGIN 
 
 
-------AS 
-------BEGIN 
------- SELECT m.nume_magazin as Magazin, i.data_intrare as Data, p.nume_produs As Produs, i.cantitate As cantitate, i.pret_unitar as Valoare
- 
------- FROM dbo.Intrari As  i
-------    LEFT JOIN dbo.Produse As p
-------    ON i.id_produs = p.id_produs
-------	 LEFT JOIN dbo.Categorie_Produs As c
-------    ON c.id_categorie = p.id_categorie
-------	 LEFT JOIN dbo.Magazin As m
-------    ON m.id_magazin = i.id_magazin
-------	Where i.pret_unitar = i.pret_unitar * i.cantitate
+-------- SELECT m.nume_magazin as Magazin,
+--------		i.data_intrare as Data,
+--------		p.nume_produs As Produs,
+--------		i.cantitate As Cantitate,
+--------		Valoare = i.pret_unitar * i.cantitate
 
------- RETURN; 
-------END 
-------GO
+-------- FROM dbo.Intrari As  i
+--------		inner JOIN dbo.Produse As p
+--------		ON i.id_produs = p.id_produs
+--------		inner JOIN dbo.Categorie_Produs As c
+--------		ON c.id_categorie = p.id_categorie
+--------		inner JOIN dbo.Magazin As m
+--------		ON m.id_magazin = i.id_magazin
+		
+--------where data_intrare < getdate()-@zile
 
-------USe Magazin
-------Exec AfisareEvolutie 
-------go
+-------- RETURN; 
+--------END 
+--------GO
+
+
+--------USe Magazin
+--------Exec AfisareEvolutie -20
+--------go
+
