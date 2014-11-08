@@ -346,34 +346,57 @@
 
 
 ---nu e bine---
---------CREATE PROC AfisareEvolutie 
---------@zile as int
---------AS 
---------BEGIN 
+----CREATE PROC AfisareEvolutie 
+----@zile as int
+----AS 
+----BEGIN 
 
 
--------- SELECT m.nume_magazin as Magazin,
---------		i.data_intrare as Data,
---------		p.nume_produs As Produs,
---------		i.cantitate As Cantitate,
---------		Valoare = i.pret_unitar * i.cantitate
+---- SELECT m.nume_magazin as Magazin,
+----		i.data_intrare as Data,
+----		p.nume_produs As Produs,
+----		i.cantitate As Cantitate,
+----		Valoare = i.pret_unitar * i.cantitate
 
--------- FROM dbo.Intrari As  i
---------		inner JOIN dbo.Produse As p
---------		ON i.id_produs = p.id_produs
---------		inner JOIN dbo.Categorie_Produs As c
---------		ON c.id_categorie = p.id_categorie
---------		inner JOIN dbo.Magazin As m
---------		ON m.id_magazin = i.id_magazin
+---- FROM dbo.Intrari As  i
+----		inner JOIN dbo.Produse As p
+----		ON i.id_produs = p.id_produs
+----		inner JOIN dbo.Categorie_Produs As c
+----		ON c.id_categorie = p.id_categorie
+----		inner JOIN dbo.Magazin As m
+----		ON m.id_magazin = i.id_magazin
 		
---------where data_intrare < getdate()-@zile
-
--------- RETURN; 
---------END 
---------GO
+----where data_intrare < getdate()-@zile
+----execute 
+---- RETURN; 
+----END 
+----GO
 
 
 --------USe Magazin
 --------Exec AfisareEvolutie -20
 --------go
 
+----Create Function FuncReturnare()
+----RETURNS  @rtnTable TABLE 
+----(
+    
+----    Magazin nvarchar(max),
+----    Data datetime,
+----	Produs nvarchar(max),
+----	Cantitate int,
+----	Valoare int
+----)
+----AS
+----BEGIN
+----DECLARE @TempTable table ( Magazin nvarchar(max),
+----    Data datetime,
+----	Produs nvarchar(max),
+----	Cantitate int,
+----	Valoare int)
+
+
+----insert into @TempTable 
+----select * from @rtnTable 
+----return
+----END
